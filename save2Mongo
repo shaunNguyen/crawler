@@ -1,0 +1,96 @@
+Spring boot save() 
+
+quang20@quang20:~/practice/demo$ git diff pom.xml
+diff --git a/pom.xml b/pom.xml
+index 7ffb76b..bc87ef7 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -21,6 +21,10 @@
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-web</artifactId>
+                </dependency>
++                <dependency>
++                        <groupId>org.springframework.boot</groupId>
++                        <artifactId>spring-boot-starter-data-mongodb</artifactId>
++                </dependency>
+
+                <dependency>
+                        <groupId>org.springframework.boot</groupId>
+quang20@quang20:~/practice/demo$ git diff src/main/java/com/example/demo/DemoApplication.java
+diff --git a/src/main/java/com/example/demo/DemoApplication.java b/src/main/java/com/example/demo/DemoApplication.java
+index 58cde1b..7a2d26a 100644
+--- a/src/main/java/com/example/demo/DemoApplication.java
++++ b/src/main/java/com/example/demo/DemoApplication.java
+@@ -3,8 +3,10 @@ package com.example.demo;
+ import org.springframework.boot.SpringApplication;
+ import org.springframework.boot.autoconfigure.SpringBootApplication;
+ import org.springframework.scheduling.annotation.EnableScheduling;
++import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
+ @EnableScheduling
++@EnableMongoRepositories
+ @SpringBootApplication
+ public class DemoApplication {
+
+quang20@quang20:~/practice/demo$ git diff src/main/java/com/example/demo/service/CrawlerService.java
+diff --git a/src/main/java/com/example/demo/service/CrawlerService.java b/src/main/java/com/example/demo/service/CrawlerService.java
+index eeaa070..fa5cad1 100644
+--- a/src/main/java/com/example/demo/service/CrawlerService.java
++++ b/src/main/java/com/example/demo/service/CrawlerService.java
+@@ -6,15 +6,23 @@ import org.springframework.stereotype.Component;
+ import org.springframework.web.client.RestTemplate;
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.scheduling.annotation.Scheduled;
++import org.springframework.beans.factory.annotation.Autowired;
+
+ import com.example.demo.dto.CovidTrackingDTO;
++import com.example.demo.repository.CovidTrackingRepository;
++import com.example.demo.model.CovidTrackingModel;
+
+ //@Service
+ @Component
+ public class CrawlerService {
++    //API
+     @Value("${covidTracking}")
+     public String covidTracking;
+
++    //MongoDB
++    @Autowired
++    CovidTrackingRepository covidTrackingRepository;
++
+     //@PostConstruct
+     @Scheduled(fixedRateString = "${schedule.fixed.time.mil.seconds}")
+     public void getAllCovidDTO() {
+@@ -23,11 +31,14 @@ public class CrawlerService {
+         CovidTrackingDTO[] covidTrackingDTO = restTemplate.getForObject(covidTracking, CovidTrackingDTO[].class);
+
+        if (covidTrackingDTO != null) {
+-            //System.out.printf("not NULL\n");
++            int id = 0;
+             for (CovidTrackingDTO covid : covidTrackingDTO) {
+                 System.out.printf("country: %s: \n \tinfected: %s, \n\trecovered: %s, \n\t--%s--\n", covid.country, covid.infected, covid.recovered, covid.lastUpdatedApify);
+-           }
+-       } else {
++                id++;
++                covidTrackingRepository.save(new CovidTrackingModel(Integer.toString(id), covid.country, covid.infected, covid.recovered, covid.lastUpdatedApify));
++                System.out.print(covidTrackingRepository.save(new CovidTrackingModel(Integer.toString(id), covid.country, covid.infected, covid.recovered, covid.lastUpdatedApify)));
++            }
++        } else {
+             System.out.printf("null\n");
+         }
+     }
+quang20@quang20:~/practice/demo$ git diff src/main/resources/application.properties
+diff --git a/src/main/resources/application.properties b/src/main/resources/application.properties
+index ee4eaf1..7aff568 100644
+--- a/src/main/resources/application.properties
++++ b/src/main/resources/application.properties
+@@ -5,5 +5,9 @@ covidTracking=https://api.apify.com/v2/key-value-stores/tVaYRsPHLjNdNBu7S/record
+ #schedule
+ schedule.fixed.time.mil.seconds=10000
+
+-server.port = 8081
++#mongodb
++spring.data.mongodb.database=covidTrackingModel
++spring.data.mongodb.port=27017
++spring.data.mongodb.host=127.0.0.1
++
