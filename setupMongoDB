@@ -1,0 +1,57 @@
+Write to MongoDB
+
+sudo apt update
+sudo apt install mongodb-org
+quang18@quang18:~$ sudo systemctl start mongod.service
+quang18@quang18:~$ sudo systemctl status mongod
+quang18@quang18:~$ sudo systemctl enable mongod
+quang18@quang18:~$ mongo
+> use record
+switched to db record
+>  db.users.insert({username: "myname", password: "mypassword"})
+WriteResult({ "nInserted" : 1 })
+>
+>  db.users.find()
+{ "_id" : ObjectId("63f4915b21445d6509c97a7d"), "username" : "myname", "password" : "mypassword" }
+>
+> db.commerce.save({scriptname: "dygraph.min.js", version: "2.1.0"})
+WriteResult({ "nInserted" : 1 })
+>
+>
+> db.users.find()
+{ "_id" : ObjectId("63f4915b21445d6509c97a7d"), "username" : "myname", "password" : "mypassword" }
+>
+> show collections
+commerce
+users
+>
+> db.commerce.find()
+{ "_id" : ObjectId("63f491ff21445d6509c97a7e"), "scriptname" : "dygraph.min.js", "version" : "2.1.0" }
+>
+> exit
+bye
+> show dbs
+admin          0.000GB
+config         0.000GB
+local          0.000GB
+mongo          0.000GB
+mygrocerylist  0.000GB
+>
+>
+> show collections
+>
+>
+> use mygrocerylist
+switched to db mygrocerylist
+>
+> db.find()
+uncaught exception: TypeError: db.find is not a function :
+@(shell):1:1
+> show collections
+GroceryItem
+> db.GroceryItem.find()
+{ "_id" : "Whole Wheat Biscuit", "name" : "Whole Wheat Biscuit", "quantity" : 5, "category" : "munchies", "_class" : "com.example.mdbspringboot.model.GroceryItem" }
+{ "_id" : "Dried Red Chilli", "name" : "Dried Whole Red Chilli", "quantity" : 2, "category" : "spices", "_class" : "com.example.mdbspringboot.model.GroceryItem" }
+{ "_id" : "Pearl Millet", "name" : "Healthy Pearl Millet", "quantity" : 1, "category" : "millets", "_class" : "com.example.mdbspringboot.model.GroceryItem" }
+{ "_id" : "Cheese Crackers", "name" : "Bonny Cheese Crackers Plain", "quantity" : 10, "category" : "munchies", "_class" : "com.example.mdbspringboot.model.GroceryItem" }
+>
