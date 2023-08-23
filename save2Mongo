@@ -94,3 +94,80 @@ index ee4eaf1..7aff568 100644
 +spring.data.mongodb.port=27017
 +spring.data.mongodb.host=127.0.0.1
 +
+quang20@quang20:~/practice/demo$ cat src/main/java/com/example/demo/model/CovidTrackingModel.java
+package com.example.demo.model;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.lang.annotation.Documented;
+
+@Document("CovidTracking")
+public class CovidTrackingModel {
+    @Id
+    public String id;
+    public String country;
+    public String recovered;
+    public String infected;
+    public String lastUpdatedApify;
+
+    public CovidTrackingModel(String id, String country, String recovered, String infected, String lastUpdatedApify){
+        super();
+        this.id = id;
+        this.country = country;
+        this.recovered = recovered;
+        this.infected = infected;
+        this.lastUpdatedApify = lastUpdatedApify;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public void setId(String id){
+        this.id = id;
+    }
+
+    public String getCountry(){
+        return country;
+    }
+
+    public void setCountry(String country){
+        this.country = country;;
+    }
+
+    public String getRecovered(){
+        return recovered;
+    }
+
+    public void setRecovered(String recovered){
+        this.recovered = recovered;;
+    }
+
+    public String getInfected(){
+        return infected;
+    }
+
+    public void setInfected(String infected){
+        this.infected = infected;
+    }
+
+    public String getLastUpdatedApify(){
+        return lastUpdatedApify;
+    }
+
+    public void setLastUpdatedApify(String lastUpdatedApify){
+        this.lastUpdatedApify = lastUpdatedApify;
+    }
+
+}
+
+quang20@quang20:~/practice/demo$ cat src/main/java/com/example/demo/repository/CovidTrackingRepository.java
+package com.example.demo.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import com.example.demo.model.CovidTrackingModel;
+
+public interface CovidTrackingRepository extends MongoRepository<CovidTrackingModel, String> {
+}
+
